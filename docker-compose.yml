@@ -1,0 +1,66 @@
+services:
+  format-converter-rabbitmq:
+    image: rabbitmq:3-management
+    container_name: format-converter-rabbitmq
+    ports:
+      - '${RABBITMQ_AMQ_PORT:-5672}:5672' # Puerto de RabbitMQ para las conexiones AMQP
+      - '${RABBITMQ_WEB_ADMINPORT:-15672}:15672' # Puerto del panel de administración web
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER} # Cambia este usuario
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS} # Cambia esta contraseña
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq # Para persistencia de datos
+  format-converter-db:
+    container_name: format-converter-db
+    image: mariadb
+    ports:
+      - '${DB_PORT:-3306}:3306'
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_PASSWORD}
+      MARIADB_DATABASE: ${DB_DATABASE}
+      MARIADB_USER: ${DB_USERNAME}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - format-converter-db:/var/lib/mysql
+    restart: on-failure
+  phpmyadmin:
+    container_name: phpmyadmin-format-converter
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - '8080:80'
+    environment:
+      PMA_HOST: format-converter-db
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      - format-converter-db
+  format-converter-api:
+    container_name: format-converter-api
+    restart: unless-stopped
+    build:
+      target: dev
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - PORT=${PORT:-3000}
+    ports:
+      - '${PORT:-3000}:${PORT:-3000}'
+      # debugging port
+      - '9229:9229'
+    volumes:
+      - .:/lsv-api
+      - /lsv-api/node_modules
+    environment:
+      - NODE_ENV=development
+      - DEBUG_PORT=9229
+    command: npm run start:debug # Run in Debug Mode: npm run start:debug --> Don't forget to start your vscode debugger!
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: '512m'
+        reservations:
+          cpus: '0.25'
+          memory: '256m'
+volumes:
+  format-converter-db:
+  rabbitmq_data:
