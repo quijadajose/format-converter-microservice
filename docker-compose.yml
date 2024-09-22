@@ -4,7 +4,7 @@ services:
     container_name: format-converter-rabbitmq
     ports:
       - '${RABBITMQ_AMQ_PORT:-5672}:5672' # Puerto de RabbitMQ para las conexiones AMQP
-      - '${RABBITMQ_WEB_ADMINPORT:-15672}:15672' # Puerto del panel de administración web
+      - '${RABBITMQ_WEB_ADMIN_PORT:-15672}:15672' # Puerto del panel de administración web
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER} # Cambia este usuario
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS} # Cambia esta contraseña
