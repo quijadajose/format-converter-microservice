@@ -47,8 +47,8 @@ services:
       # debugging port
       - '9229:9229'
     volumes:
-      - .:/lsv-api
-      - /lsv-api/node_modules
+      - .:/format-converter-api
+      - /format-converter-api/node_modules
     environment:
       - NODE_ENV=development
       - DEBUG_PORT=9229

@@ -2,7 +2,7 @@
 FROM node:20-alpine3.18 AS dev
 
 # Establecer el directorio de trabajo en el contenedor
-WORKDIR /lsv-api
+WORKDIR /format-converter-api
 
 # Copiar los archivos package.json y package-lock.json al contenedor
 COPY package*.json ./
