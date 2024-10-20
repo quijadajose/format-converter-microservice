@@ -1,13 +1,22 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { ConfigModule } from '@nestjs/config';
 import { VideoConversionModule } from './video-conversion/video-conversion.module';
-import { StorageModule } from './storage/storage.module';
-import { QueueHandlingModule } from './queue-handling/queue-handling.module';
+import { appConfig } from './config/app.config';
+import { rabbitMqConfig } from './config/rabbitmq.config';
 
 @Module({
-  imports: [VideoConversionModule, StorageModule, QueueHandlingModule],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    ConfigModule.forRoot({
+      load: [appConfig, rabbitMqConfig],
+      isGlobal: true,
+    }),
+    VideoConversionModule
+  ],
+  controllers: [],
+  providers: [],
 })
-export class AppModule {}
+export class AppModule {
+  constructor() {
+    console.log('AppModule');
+  }
+}
